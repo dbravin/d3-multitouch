@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<style type="text/css">
+		rect{
+			fill: lightblue;
+		}
+	</style>
+</head>
+<body>
+
+
+	<script type="text/javascript">
+		var margin = {top: 80, right: 20, bottom: 20, left: 20};
+		var outer_width = window.innerWidth;
+		var outer_height = window.innerHeight;
+		var width = outer_width - margin.left - margin.right ;
+		var height = outer_height - margin.top - margin.bottom
+		var svg = d3.select("body").append("svg")
+		.attr("width", outer_width)
+		.attr("height", outer_height)
+		.append("g")
+		.attr('class', 'touch_container')
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		svg.append('rect')
+		.attr('width', width)
+		.attr('height', height)
+		.attr('x', 0)
+		.attr('y', 0)
+		.on('touchstart', touching)
+		.on('touchmove', touching)
+		.on('touchend', touching)
+
+		var color_scale = d3.scaleOrdinal(d3.schemeCategory10);
+
+		function touching(){
+			d3.event.preventDefault();
+			d3.event.stopPropagation();
+			var d = d3.touches(this);
+			console.debug(d)
+
+			var circles = d3.select('g.touch_container')
+			.selectAll('circle')
+			.data(d)
+
+			var transition_in = d3.transition()
+			.duration(300)
+			.ease();
+			var transition_out = d3.transition()
+			.duration(300)
+			.ease()
+
+			circles.attr('cx', function(e){return e[0]})
+			.attr('cy', function(e){return e[1]})
+			.attr('r', 150)
+			.style('opacity', 1)
+			.style('fill', function(v, i){
+				return color_scale(i)
+			})
+	    // .transition(transition_in)
+	    // .attr('r', 150)
+	    // .style('opacity', 1)
+
+	    circles.enter()
+	    .append('circle')
+	    .attr('cx', function(e){return e[0]})
+	    .attr('cy', function(e){return e[1]})
+	    .attr('r', 50)
+	    .style('fill', function(v, i){
+	    	return color_scale(i)
+	    })
+	    .style('opacity', 0)
+	    .transition(transition_in)
+	    .attr('r', 150)
+	    .style('opacity', 1)
+
+	    circles.exit()
+	    .transition(transition_out)
+	    .attr('r', 0)
+	    .style('opacity', 0)
+	    .remove()
+	}
+
+
+
+
+</script>
+</body>
+</html>
